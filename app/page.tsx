@@ -1,23 +1,19 @@
-import { ThemeToggle } from '@/components/theme-toggle';
+'use client';
 
-export default function HomePage() {
+import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
+import Projects from '@/components/sections/Projects';
+import Contact from '@/components/sections/Contact';
+import SectionObserver from '@/components/SectionObserver';
+
+export default function Home() {
   return (
-    <main className="min-h-screen bg-white text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100">
-      <section id="about">
-        ...
-      </section>
-
-      <section id="projects">
-        ...
-      </section>
-
-      <section id="skills">
-        ...
-      </section>
-
-      <section id="contact">
-        ...
-      </section>
+    <main>
+      <SectionObserver />
+      <Hero />
+      <About />
+      <Projects />
+      <Contact />
     </main>
   );
 }

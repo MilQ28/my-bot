@@ -18,9 +18,9 @@ export default function ChatMessage({ message }: { message: UIMessage }) {
                 }`}
         >
             <div
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isUser
-                        ? 'bg-indigo-600'
-                        : 'bg-gray-200 dark:bg-gray-700'
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${isUser
+                        ? 'bg-primary'
+                        : 'bg-secondary/10'
                     }`}
             >
                 {isUser ? (
@@ -28,15 +28,15 @@ export default function ChatMessage({ message }: { message: UIMessage }) {
                 ) : (
                     <Bot
                         size={14}
-                        className="text-gray-600 dark:text-gray-300"
+                        className="text-secondary"
                     />
                 )}
             </div>
 
             <div
-                className={`max-w-[75%] wrap-break-word rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${isUser
-                        ? 'rounded-br-sm bg-indigo-600 text-white'
-                        : 'rounded-bl-sm bg-white text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-100'
+                className={`max-w-[75%] wrap-break-word rounded-lg px-3.5 py-2 text-sm leading-relaxed ${isUser
+                        ? 'rounded-br-sm bg-primary text-foreground'
+                        : 'rounded-bl-sm bg-background text-foreground shadow-sm'
                     }`}
             >
                 {isUser ? (

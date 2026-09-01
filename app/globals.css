@@ -1,6 +1,78 @@
 @import "tailwindcss";
+@import "./styles/lanyard.css";
 
-/* Ini pengganti darkMode: 'class' di tailwind.config.ts lama.
-   Baris ini bikin utility dark: aktif berdasarkan class .dark
-   di elemen induk (biasanya <html>), bukan cuma prefers-color-scheme sistem. */
-@custom-variant dark (&:where(.dark, .dark *));
+:root {
+  /* Neutral warm off-white — no purple cast */
+  --background: #F8F8F6;
+  --foreground: #111110;
+
+  /* One accent only. --accent is an alias, not a second color. */
+  --primary: #30BCED;
+  --accent: #30BCED;
+
+  --secondary: #303036;
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  /* Radius hierarchy — cards softer, buttons tighter */
+  --r-card: 0.75rem;
+  --r-btn: 0.5rem;
+
+  /* Alias yang dibutuhkan oleh lanyardPhysics dan lanyard.css */
+  --ink: #111110;
+  --paper: #F8F8F6;
+  --grey: #8a8a8a;
+  --amber: #FFCA28;
+  --blue: #30BCED;
+  --line: rgba(17, 17, 16, 0.1);
+  /* Panel noticeably darker than background for real elevation */
+  --panel: #ECEAE6;
+  --ink-soft: #303036;
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-panel: var(--panel);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Edge, Safari */
+}
+
+.colorblind-friendly {
+  --primary: #0072B2;
+  /* Biru Tua */
+  --accent: #E69F00;
+  /* Oranye Terang */
+  --success: #009E73;
+  /* Hijau Kebiruan */
+  --danger: #D55E00;
+  /* Merah Oranye */
+}
+
+/* Aksesibilitas: Garis bawah otomatis untuk link agar tidak hanya mengandalkan warna */
+.colorblind-friendly a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

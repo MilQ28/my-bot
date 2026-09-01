@@ -1,9 +1,63 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Agent Instructions
 
-# This is NOT the Next.js you know
+## MANDATORY: SKILL DISCOVERY
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+Before doing ANY work, you MUST inspect the `SKILLS/` directory.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+This is a mandatory pre-task step, not a suggestion.
 
-<!-- END:nextjs-agent-rules -->
+### Required sequence
+
+1. Inspect the `SKILLS/` directory.
+2. Read `SKILLS/README.md` if it exists.
+3. Identify every skill relevant to the requested task.
+4. Read the relevant `SKILL.md` files.
+5. Apply those instructions during planning and implementation.
+6. Only after completing the above may you modify project files.
+
+Never skip this process, even when:
+- the task appears trivial
+- the requested change is only one line
+- you believe you already know the solution
+- the relevant skill seems obvious
+- the task is a UI-only change
+
+### Anti-Slop Requirement
+
+If `SKILLS/anti-slop/SKILL.md` exists, it MUST be read before creating
+or modifying UI, UX, styling, layouts, components, pages, or visual design.
+
+The anti-slop skill is authoritative for avoiding generic AI-generated
+design patterns and low-quality implementation.
+
+Do not create:
+- generic AI-looking layouts
+- unnecessary gradients
+- excessive rounded cards
+- meaningless glassmorphism
+- arbitrary decorative elements
+- repetitive card grids
+- generic hero sections
+- excessive badges
+- unnecessary animations
+- placeholder-like copy
+- visually interchangeable components
+
+Prefer intentional design decisions based on the project's existing
+visual language and the actual purpose of the interface.
+
+### Implementation Rule
+
+Do not write implementation code until the required skills have been read.
+
+When a skill provides a specific convention or constraint, follow it unless
+a higher-priority instruction conflicts with it.
+
+### Validation
+
+After implementation:
+
+1. Verify the changes against the relevant skills.
+2. Check that no anti-slop requirements were violated.
+3. Run appropriate validation or tests.
+4. Fix issues before finishing.

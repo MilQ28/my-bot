@@ -1,0 +1,542 @@
+/* ===============================================================
+   BASE
+   =============================================================== */
+
+section { scroll-margin-top: 3rem; }
+
+/* ===============================================================
+   HERO — full-viewport, layered layout
+   =============================================================== */
+
+.hero {
+  position: relative;
+  height: 100dvh;
+  min-height: 560px;
+  overflow: hidden;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#gridCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
+
+/* ── Card layer — center, above name, below header ── */
+.hero-card-layer {
+  position: absolute;
+  top: 3rem;
+  bottom: 2.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* card itself has pointer events */
+}
+
+/* ── Caption — bottom-left ── */
+.hero-caption {
+  position: absolute;
+  bottom: clamp(3.5rem, 8vh, 5.5rem);
+  left: clamp(2rem, 6vw, 7rem);
+  z-index: 10;
+}
+
+.hero-caption-role {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.35;
+  margin: 0 0 0.6rem;
+}
+
+.hero-caption-bio {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--ink);
+  opacity: 0.55;
+  margin: 0 0 1.2rem;
+  max-width: 30ch;
+}
+
+.hero-caption-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-link {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1px;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  padding-left: 0;
+  padding-right: 0;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-link:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.hero-link-sep {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--ink);
+  opacity: 0.2;
+}
+
+/* ── Scrolling ticker bottom ── */
+.hero-ticker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5rem;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.hero-ticker-track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: ticker-scroll 28s linear infinite;
+}
+
+.hero-ticker-item {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.25;
+  padding: 0 2rem;
+  border-right: 1px solid rgba(17,17,16,0.08);
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ticker-track { animation: none; }
+}
+
+/* ===============================================================
+   LANYARD SIMULATION
+   =============================================================== */
+
+.lanyard-wrap {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+  pointer-events: all;
+}
+
+.lanyard-simulation {
+  position: relative;
+  opacity: 0;
+  transition: opacity .8s ease;
+  perspective: 900px;
+}
+
+.lanyard-simulation.visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lanyard-simulation { opacity: 1; }
+}
+
+.lanyard-hanger {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lanyard-strap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--ink);
+  border-radius: 5px;
+  transform-origin: top center;
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 1;
+}
+
+.lanyard-strap .stitch {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 50%;
+  width: 0;
+  border-left: 1.5px dashed rgba(245, 243, 236, 0.35);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* ===============================================================
+   MEMBER CARD — Tactile Developer Pass
+   =============================================================== */
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  width: 280px;
+  padding: 1.15rem;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  transform-origin: center top;
+  z-index: 2;
+  box-shadow:
+    0 2px 0 rgba(17,17,16,0.06),
+    0 8px 24px rgba(17,17,16,0.08),
+    0 20px 40px rgba(17,17,16,0.05);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card-hole {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Card Header */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed rgba(17,17,16,0.15);
+  font-family: var(--font-mono, monospace);
+  pointer-events: none;
+}
+
+.card-tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  opacity: 0.75;
+}
+
+.card-status {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+}
+
+/* Card Visual Profile */
+.card-photo {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(17,17,16,0.2);
+  background: var(--ink);
+  color: #FFFAFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-size: 8px 8px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  pointer-events: none;
+}
+
+.card-monogram {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.card-badge-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-badge-name {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #FFFAFF;
+}
+
+.card-badge-role {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,250,255,0.6);
+}
+
+/* Card Meta Details */
+.card-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  pointer-events: none;
+}
+
+.card-meta-label {
+  display: block;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  opacity: 0.4;
+  margin-bottom: 1px;
+}
+
+.card-meta-val {
+  display: block;
+  font-size: 0.56rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Barcode */
+.card-barcode-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1px dashed rgba(17,17,16,0.15);
+  pointer-events: none;
+}
+
+.card-barcode {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.card-barcode span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  width: 1.5px;
+}
+
+.card-barcode span:nth-child(even) {
+  width: 2.5px;
+}
+
+.card-barcode span:nth-child(3n) {
+  width: 1px;
+}
+
+.card-serial {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  opacity: 0.45;
+}
+
+.perf {
+  display: flex;
+  gap: 6px;
+  margin: 0.75rem 0 0;
+  pointer-events: none;
+}
+
+.perf span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: .18;
+}
+
+/* Fallback layout saat card belum di-position oleh JavaScript */
+.lanyard-simulation:not(.visible) .card {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin-bottom: 2rem;
+}
+
+.lanyard-simulation.visible .card {
+  position: absolute;
+  margin-bottom: 0;
+}
+
+/* ===============================================================
+   REVEAL ANIMATION
+   =============================================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ===============================================================
+   FOCUS STATES (Accessibility)
+   =============================================================== */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===============================================================
+   RESPONSIVE
+   =============================================================== */
+
+@media (min-width: 641px) {
+  .lanyard-simulation {
+    width: 300px;
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    height: 100dvh;
+    min-height: 560px;
+    overflow: hidden;
+  }
+
+  .hero-card-layer {
+    top: 2rem;
+    bottom: 9rem;
+  }
+
+  .hero-caption {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 3rem;
+    z-index: 20;
+  }
+
+  .hero-caption-role {
+    font-size: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-caption-bio {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    max-width: 100%;
+  }
+
+  .hero-caption-links {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lanyard-simulation {
+    width: 240px;
+    min-height: 320px;
+  }
+
+  .card {
+    width: 220px;
+    padding: 0.85rem;
+  }
+
+  .card-photo {
+    aspect-ratio: 1 / 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .perf { display: none; }
+}
+
+@media (max-width: 360px) {
+  .card { width: 195px; padding: 0.75rem; }
+  .lanyard-simulation { min-height: 280px; }
+  .hero-card-layer { bottom: 9.5rem; }
+}
+
