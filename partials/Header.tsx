@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { useColorBlind } from "@/contexts/ColorBlindContext";
 
 const NAV_LINKS = [
-  { label: "about", href: "#about" },
-  { label: "projects", href: "#projects" },
-  { label: "contact", href: "#contact" },
+  { label: "about", href: "/#about" },
+  { label: "projects", href: "/#projects" },
+  { label: "contact", href: "/#contact" },
 ];
 
 export default function Header() {
@@ -49,7 +49,7 @@ export default function Header() {
       >
         {/* Wordmark */}
         <a
-          href="#home"
+          href="/#home"
           className="text-foreground no-underline font-mono text-xs tracking-[0.14em] uppercase opacity-70 hover:opacity-100 transition-opacity duration-200"
         >
           syamil atsani

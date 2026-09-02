@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Container from "../Container";
+import type { ProjectItem } from "@/lib/dataStore";
 
 interface GithubRepo {
     id: number;
@@ -61,36 +62,25 @@ const FALLBACK_REPOS: GithubRepo[] = [
         updated_at: "2026-07-15T07:23:37Z",
         fork: false,
     },
-    {
-        id: 5,
-        name: "empat",
-        description: "Backend exploration & PHP web utility system.",
-        html_url: "https://github.com/MilQ28/empat",
-        language: "PHP",
-        stargazers_count: 0,
-        forks_count: 0,
-        updated_at: "2026-06-23T09:09:36Z",
-        fork: false,
-    },
-    {
-        id: 6,
-        name: "h-1",
-        description: "Frontend scripts & interactive client experiments.",
-        html_url: "https://github.com/MilQ28/h-1",
-        language: "JavaScript",
-        stargazers_count: 0,
-        forks_count: 0,
-        updated_at: "2026-06-24T09:02:11Z",
-        fork: false,
-    },
 ];
 
 export default function Projects() {
     const [repos, setRepos] = useState<GithubRepo[]>(FALLBACK_REPOS);
+    const [customProjects, setCustomProjects] = useState<ProjectItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLive, setIsLive] = useState<boolean>(false);
 
     useEffect(() => {
+        // Fetch Admin Custom Projects
+        fetch("/api/admin/data")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data?.projects && Array.isArray(data.projects)) {
+                    setCustomProjects(data.projects);
+                }
+            })
+            .catch(() => {});
+
         async function fetchGithubRepos() {
             try {
                 const res = await fetch("https://api.github.com/users/MilQ28/repos?sort=updated&per_page=12");
@@ -146,7 +136,7 @@ export default function Projects() {
                         )}
                     </div>
                     <p className="font-sans text-xs sm:text-sm text-foreground/60 max-w-sm leading-relaxed">
-                        Public repos from <strong>@MilQ28</strong>, synced from GitHub.
+                        Public repos from <strong>@MilQ28</strong> &amp; featured work.
                     </p>
                 </div>
 
@@ -165,43 +155,92 @@ export default function Projects() {
                     </div>
                 ) : (
                     <div className="divide-y divide-line">
-                        {repos.map((repo, idx) => (
+                        {/* 1. Custom Featured Projects from Admin Panel */}
+                        {customProjects.map((proj, idx) => (
                             <div
-                                key={repo.id}
+                                key={proj.id}
                                 className="group py-7 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-8 hover:bg-panel/50 -mx-4 px-4 sm:-mx-8 sm:px-8 transition-colors duration-200"
                             >
-                                {/* Index */}
-                                <span className="font-mono text-[0.65rem] text-foreground/30 shrink-0 mt-1 w-6 hidden sm:block">
+                                <span className="font-mono text-[0.65rem] text-primary shrink-0 mt-1 w-6 hidden sm:block font-bold">
                                     {String(idx + 1).padStart(2, "0")}
                                 </span>
 
-                                {/* Name & Description */}
                                 <div className="flex-1 min-w-0">
-                                    <a
-                                        href={repo.html_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-lg sm:text-xl font-sans font-bold text-foreground group-hover:text-primary transition-colors no-underline"
-                                    >
-                                        {repo.name}
-                                    </a>
+                                    <div className="flex items-center gap-2">
+                                        <a
+                                            href={proj.githubUrl || proj.liveUrl || "#"}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-lg sm:text-xl font-sans font-bold text-foreground group-hover:text-primary transition-colors no-underline"
+                                        >
+                                            {proj.title}
+                                        </a>
+                                        {proj.status && (
+                                            <span className="font-mono text-[0.6rem] px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary">
+                                                {proj.status}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs sm:text-sm text-foreground/60 font-sans leading-relaxed mt-1 max-w-xl">
-                                        {repo.description || "Public repository by Syamil Cholid Atsani."}
+                                        {proj.description}
                                     </p>
+                                    {proj.technologies && proj.technologies.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5 mt-2">
+                                            {proj.technologies.map((t, i) => (
+                                                <span key={i} className="font-mono text-[10px] text-foreground/60 bg-panel px-2 py-0.5 border border-line rounded">
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Meta — language + date, right-aligned */}
                                 <div className="font-mono text-[0.65rem] text-foreground/40 flex sm:flex-col items-start sm:items-end gap-3 sm:gap-1 shrink-0">
-                                    {repo.language && (
-                                        <span className="text-foreground/60 font-bold">{repo.language}</span>
-                                    )}
-                                    <span>{formatDate(repo.updated_at)}</span>
-                                    {repo.stargazers_count > 0 && (
-                                        <span>★ {repo.stargazers_count}</span>
-                                    )}
+                                    <span className="text-primary font-bold">FEATURED</span>
                                 </div>
                             </div>
                         ))}
+
+                        {/* 2. GitHub Repositories (filtering out duplicates) */}
+                        {repos
+                            .filter((r) => !customProjects.some((cp) => cp.title.toLowerCase() === r.name.toLowerCase()))
+                            .map((repo, idx) => (
+                                <div
+                                    key={repo.id}
+                                    className="group py-7 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-8 hover:bg-panel/50 -mx-4 px-4 sm:-mx-8 sm:px-8 transition-colors duration-200"
+                                >
+                                    {/* Index */}
+                                    <span className="font-mono text-[0.65rem] text-foreground/30 shrink-0 mt-1 w-6 hidden sm:block">
+                                        {String(customProjects.length + idx + 1).padStart(2, "0")}
+                                    </span>
+
+                                    {/* Name & Description */}
+                                    <div className="flex-1 min-w-0">
+                                        <a
+                                            href={repo.html_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-lg sm:text-xl font-sans font-bold text-foreground group-hover:text-primary transition-colors no-underline"
+                                        >
+                                            {repo.name}
+                                        </a>
+                                        <p className="text-xs sm:text-sm text-foreground/60 font-sans leading-relaxed mt-1 max-w-xl">
+                                            {repo.description || "Public repository by Syamil Cholid Atsani."}
+                                        </p>
+                                    </div>
+
+                                    {/* Meta — language + date, right-aligned */}
+                                    <div className="font-mono text-[0.65rem] text-foreground/40 flex sm:flex-col items-start sm:items-end gap-3 sm:gap-1 shrink-0">
+                                        {repo.language && (
+                                            <span className="text-foreground/60 font-bold">{repo.language}</span>
+                                        )}
+                                        <span>{formatDate(repo.updated_at)}</span>
+                                        {repo.stargazers_count > 0 && (
+                                            <span>★ {repo.stargazers_count}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                     </div>
                 )}
 

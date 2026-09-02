@@ -18,10 +18,20 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("[CHAT_API] Incoming request with", rawMessages.length, "messages");
+    // Normalize raw messages to guarantee every message has a valid parts array
+    const normalizedMessages = rawMessages.map((msg: any) => {
+      if (Array.isArray(msg.parts) && msg.parts.length > 0) {
+        return msg;
+      }
+      const textContent = typeof msg.content === "string" ? msg.content : (typeof msg.text === "string" ? msg.text : "");
+      return {
+        role: msg.role || "user",
+        parts: [{ type: "text", text: textContent }],
+      };
+    });
 
     // Convert UIMessages to ModelMessages correctly handling parts, tool calls, and text
-    const modelMessages = await convertToModelMessages(rawMessages);
+    const modelMessages = await convertToModelMessages(normalizedMessages);
 
     const result = streamText({
       model: groq("openai/gpt-oss-120b"),
@@ -35,8 +45,10 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("[CHAT_API_ERROR]", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : undefined;
     return Response.json(
-      { error: "Terjadi kesalahan saat memproses permintaan AI." },
+      { error: "Terjadi kesalahan saat memproses permintaan AI.", detail: msg, stack },
       { status: 500 }
     );
   }

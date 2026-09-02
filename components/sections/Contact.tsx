@@ -71,6 +71,17 @@ export default function Contact() {
                             >
                                 {copied ? "✓ Copied to clipboard" : "Copy email address"}
                             </button>
+                            <a
+                                href="/cv.pdf"
+                                download="Syamil_Cholid_Atsani_CV.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 sm:flex-none py-2.5 px-5 border border-foreground/20 hover:border-foreground bg-background hover:bg-foreground hover:text-background transition-all duration-200 font-mono text-[0.68rem] tracking-wider uppercase text-foreground font-bold cursor-pointer text-center inline-flex items-center justify-center gap-1.5"
+                                style={{ borderRadius: "var(--r-btn)" }}
+                            >
+                                <span>Download CV</span>
+                                <span aria-hidden="true">↓</span>
+                            </a>
                             <button
                                 onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
                                 className="flex-1 sm:flex-none py-2.5 px-5 bg-primary text-foreground hover:opacity-85 transition-opacity duration-200 font-mono text-[0.68rem] tracking-wider uppercase font-bold cursor-pointer text-center"

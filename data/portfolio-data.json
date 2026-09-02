@@ -1,0 +1,122 @@
+{
+  "profile": {
+    "name": "Syamil Cholid Atsani",
+    "role": "Student Developer",
+    "location": "Lampung, Indonesia",
+    "status": "Open for project & internship",
+    "focus": "Laravel - Next.js - TypeScript",
+    "bioSubtitle": "student developer - lampung",
+    "bioQuote": "nulis kode, deploy server,\nkadang debug sampai subuh.",
+    "aboutParagraphs": [
+      "Halo! Gua student developer asal Lampung yang fokus ngebangun aplikasi web modern dan interaktif.",
+      "Gua paling sering ngoding pakai Next.js, React, dan Laravel buat kebutuhan aplikasi web full-stack yang responsif dan user-friendly.",
+      "Prinsip gua cukup simpel: bikin aplikasi yang kodenya rapi, gampang di-maintain, dan beneran ngebantu orang yang make."
+    ],
+    "email": "syamilcholidatsan@gmail.com",
+    "github": "https://github.com/MilQ28",
+    "linkedin": "https://linkedin.com/in/syamilca"
+  },
+  "projects": [
+    {
+      "id": "stellazone",
+      "title": "Stellazone",
+      "subtitle": "School Organization Web Platform",
+      "description": "Web platform terpadu untuk organisasi sekolah MPK-OSIS guna mendukung alur kerja administrasi, komunikasi, dan manajemen data siswa.",
+      "technologies": [
+        "Next.js",
+        "React",
+        "Laravel",
+        "MySQL",
+        "Tailwind CSS"
+      ],
+      "githubUrl": "https://github.com/MilQ28/Stellazone",
+      "liveUrl": "",
+      "status": "In Active Development",
+      "isFeatured": true
+    },
+    {
+      "id": "my-bot",
+      "title": "my-bot",
+      "subtitle": "AI Chatbot Assistant",
+      "description": "AI chatbot assistant & interactive conversational web platform dengan integrasi tools pencarian repository GitHub.",
+      "technologies": [
+        "TypeScript",
+        "Next.js",
+        "AI SDK",
+        "Groq"
+      ],
+      "githubUrl": "https://github.com/MilQ28/my-bot",
+      "liveUrl": "",
+      "status": "Under Development",
+      "isFeatured": true
+    }
+  ],
+  "skills": [
+    {
+      "category": "Frameworks & Backend",
+      "items": [
+        {
+          "name": "Laravel (PHP)",
+          "desc": "Web backend, REST API, web applications"
+        },
+        {
+          "name": "Node.js & Express",
+          "desc": "REST API & server utilities"
+        },
+        {
+          "name": "Python",
+          "desc": "Scripting, automation, data handling"
+        }
+      ]
+    },
+    {
+      "category": "Frontend & Interface",
+      "items": [
+        {
+          "name": "Next.js & React",
+          "desc": "Full-stack web apps, dynamic routing"
+        },
+        {
+          "name": "TypeScript",
+          "desc": "Type-safe code, fewer runtime surprises"
+        },
+        {
+          "name": "Tailwind CSS",
+          "desc": "Responsive styling, component UI"
+        }
+      ]
+    },
+    {
+      "category": "Database & Tools",
+      "items": [
+        {
+          "name": "PostgreSQL & MySQL",
+          "desc": "Relational databases, schema design"
+        },
+        {
+          "name": "Linux & Docker",
+          "desc": "Dev environment, deployment"
+        },
+        {
+          "name": "Git & GitHub",
+          "desc": "Version control, code management"
+        }
+      ]
+    }
+  ],
+  "botConfig": {
+    "quickPrompts": [
+      "Ceritakan tentang Syamil",
+      "Apa saja skill Syamil?",
+      "Lihat proyek terbaru",
+      "Bagaimana cara menghubungi Syamil?",
+      "Boleh minta CV / Resume Syamil?",
+      "Ceritakan latar belakang Syamil",
+      "Teknologi apa yang Syamil gunakan?",
+      "Apa proyek paling menarik?",
+      "Apakah Syamil tersedia untuk bekerja sama?",
+      "Ini tuh apa loh??"
+    ],
+    "customNote": ""
+  }
+}

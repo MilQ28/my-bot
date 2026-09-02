@@ -1,10 +1,33 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { initLanyard } from "@/lib/lanyardPhysics";
+import type { PortfolioData } from "@/lib/dataStore";
 
 export default function Hero() {
     const simulationRef = useRef<HTMLDivElement>(null);
+    const [profile, setProfile] = useState<PortfolioData['profile']>({
+        name: "Syamil Cholid Atsani",
+        role: "Student Developer",
+        location: "Lampung, ID",
+        status: "Open for project & internship",
+        focus: "Laravel - Next.js - TypeScript",
+        bioSubtitle: "student developer - lampung",
+        bioQuote: "nulis kode, deploy server,\nkadang debug sampai subuh.",
+        aboutParagraphs: [],
+        email: "syamilcholidatsan@gmail.com",
+        github: "https://github.com/MilQ28",
+        linkedin: "https://linkedin.com/in/syamilca",
+    });
+
+    useEffect(() => {
+        fetch("/api/admin/data")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data?.profile) setProfile(data.profile);
+            })
+            .catch(() => {});
+    }, []);
 
     useEffect(() => {
         if (simulationRef.current) {
@@ -74,10 +97,10 @@ export default function Hero() {
                             {/* Clean Name & Info */}
                             <div className="pt-3 pb-1 border-b border-line">
                                 <h1 className="font-mono text-xs font-bold tracking-wide uppercase text-foreground leading-tight">
-                                    Syamil Cholid Atsani
+                                    {profile.name}
                                 </h1>
                                 <p className="font-mono text-[0.65rem] text-foreground/60 mt-0.5">
-                                    Student Developer
+                                    {profile.role}
                                 </p>
                             </div>
 
@@ -85,11 +108,11 @@ export default function Hero() {
                             <div className="card-meta-grid pt-2.5">
                                 <div>
                                     <span className="card-meta-label">LOCATION</span>
-                                    <span className="card-meta-val">Lampung, ID</span>
+                                    <span className="card-meta-val">{profile.location}</span>
                                 </div>
                                 <div>
                                     <span className="card-meta-label">FOCUS</span>
-                                    <span className="card-meta-val">Laravel - Next.js - TypeScript</span>
+                                    <span className="card-meta-val">{profile.focus}</span>
                                 </div>
                             </div>
                         </div>
@@ -99,24 +122,33 @@ export default function Hero() {
 
             {/* Bottom-left caption */}
             <div className="hero-caption">
-                <p className="hero-caption-role">student developer - lampung</p>
-                <p className="hero-caption-bio">
-                    nulis kode, deploy server,<br />
-                    kadang debug sampai subuh.
+                <p className="hero-caption-role">{profile.bioSubtitle || 'student developer - lampung'}</p>
+                <p className="hero-caption-bio whitespace-pre-line">
+                    {profile.bioQuote || 'nulis kode, deploy server,\nkadang debug sampai subuh.'}
                 </p>
                 <div className="hero-caption-links">
-                    <a href="#about" className="hero-link">about</a>
+                    <a href="/#about" className="hero-link">about</a>
                     <span className="hero-link-sep">/</span>
-                    <a href="#projects" className="hero-link">projects</a>
+                    <a href="/#projects" className="hero-link">projects</a>
                     <span className="hero-link-sep">/</span>
                     <a
-                        href="#contact"
+                        href="/#contact"
                         onClick={() => {
                             window.dispatchEvent(new CustomEvent("open-chat"));
                         }}
                         className="hero-link"
                     >
                         talk
+                    </a>
+                    <span className="hero-link-sep">/</span>
+                    <a
+                        href="/cv.pdf"
+                        download="Syamil_Cholid_Atsani_CV.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hero-link font-bold text-primary"
+                    >
+                        cv ↗
                     </a>
                 </div>
             </div>

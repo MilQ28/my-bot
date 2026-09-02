@@ -20,6 +20,7 @@ const QUICK_CHAT_PROMPTS = [
     'Teknologi apa yang Syamil gunakan?',
     'Apa proyek paling menarik?',
     'Apakah Syamil tersedia untuk bekerja sama?',
+    'Boleh minta CV / Resume Syamil?',
     'Di mana Syamil pernah bekerja?',
     'Buka profil LinkedIn Syamil',
 ];
@@ -29,15 +30,33 @@ const getRandomQuickChats = () =>
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
 
+// Static transport instance to avoid recreating promises on every render
+const chatTransport = new DefaultChatTransport({ api: '/api/chat' });
+
 export default function ChatWidget() {
+    const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
+    const [promptsList, setPromptsList] = useState<string[]>(QUICK_CHAT_PROMPTS);
     const [quickChats, setQuickChats] = useState(getRandomQuickChats);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        setMounted(true);
+        fetch('/api/admin/data')
+            .then((res) => res.json())
+            .then((data) => {
+                if (data?.botConfig?.quickPrompts && Array.isArray(data.botConfig.quickPrompts)) {
+                    setPromptsList(data.botConfig.quickPrompts);
+                    setQuickChats([...data.botConfig.quickPrompts].sort(() => Math.random() - 0.5).slice(0, 3));
+                }
+            })
+            .catch(() => {});
+    }, []);
+
     const { messages, sendMessage, status, setMessages, error } = useChat({
-        transport: new DefaultChatTransport({ api: '/api/chat' }),
+        transport: chatTransport,
         onError: (err) => {
             console.error('[CHAT_WIDGET_ERROR]', err);
         },
@@ -50,11 +69,19 @@ export default function ChatWidget() {
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    setMessages(parsed);
+                    const validMessages = parsed.map((m: any, idx: number) => ({
+                        id: m.id || `msg-${idx}-${Date.now()}`,
+                        role: m.role || 'assistant',
+                        parts: Array.isArray(m.parts) && m.parts.length > 0
+                            ? m.parts
+                            : [{ type: 'text' as const, text: typeof m.content === 'string' ? m.content : '' }],
+                    }));
+                    setMessages(validMessages as any);
                 }
             }
         } catch (err) {
             console.error('Gagal memuat riwayat chat:', err);
+            try { localStorage.removeItem(STORAGE_KEY); } catch {}
         }
     }, [setMessages]);
 
@@ -114,24 +141,34 @@ export default function ChatWidget() {
 
     const isLoading = status === 'submitted' || status === 'streaming';
 
-    const handleSend = (e: React.FormEvent) => {
+    const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         const trimmed = input.trim();
         if (!trimmed || isLoading) return;
-        sendMessage({ text: trimmed });
         setInput('');
         setQuickChats([]);
+        try {
+            await sendMessage({ text: trimmed });
+        } catch (err) {
+            console.error('[CHAT_SEND_ERROR]', err);
+        }
     };
 
-    const handleQuickChat = (prompt: string) => {
+    const handleQuickChat = async (prompt: string) => {
         if (isLoading) return;
-        sendMessage({ text: prompt });
         setInput('');
         setQuickChats([]);
+        try {
+            await sendMessage({ text: prompt });
+        } catch (err) {
+            console.error('[CHAT_QUICK_SEND_ERROR]', err);
+        }
     };
 
     const toggleChat = () => {
-        if (!isOpen) setQuickChats(getRandomQuickChats());
+        if (!isOpen) {
+            setQuickChats([...promptsList].sort(() => Math.random() - 0.5).slice(0, 3));
+        }
         setIsOpen((prev) => !prev);
     };
 
@@ -140,8 +177,12 @@ export default function ChatWidget() {
         try {
             localStorage.removeItem(STORAGE_KEY);
         } catch {}
-        setQuickChats(getRandomQuickChats());
+        setQuickChats([...promptsList].sort(() => Math.random() - 0.5).slice(0, 3));
     };
+
+    if (!mounted) {
+        return null;
+    }
 
     return (
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end font-sans">

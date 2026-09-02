@@ -37,7 +37,7 @@ export default function ChatMessage({ message }: { message: UIMessage }) {
             </div>
 
             <div
-                className={`max-w-[82%] break-words rounded-lg px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed ${
+                className={`max-w-[82%] break-words rounded-lg px-3 py-2 text-[11px] sm:text-xs leading-relaxed ${
                     isUser
                         ? 'rounded-br-sm bg-primary text-primary-foreground font-medium'
                         : 'rounded-bl-sm bg-background/95 border border-line text-foreground shadow-sm'

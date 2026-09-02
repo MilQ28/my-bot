@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/theme-provider';
 import ChatWidget from '@/components/chat/ChatWidget';
+import AdminSecretModal from '@/components/AdminSecretModal';
 import { ColorBlindProvider } from '@/contexts/ColorBlindContext';
 import Header from '@/partials/Header';
 import './globals.css';
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
 
             <ChatWidget />
+            <AdminSecretModal />
             
             <Footer/>
             

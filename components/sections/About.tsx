@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Container from "../Container";
+import type { PortfolioData } from "@/lib/dataStore";
 
-const TECH_STACK = [
+const DEFAULT_STACK = [
     {
         category: "Frameworks & Backend",
         items: [
@@ -30,6 +32,30 @@ const TECH_STACK = [
 ];
 
 export default function About() {
+    const [data, setData] = useState<PortfolioData | null>(null);
+
+    useEffect(() => {
+        fetch("/api/admin/data")
+            .then((res) => res.json())
+            .then((resData) => {
+                if (resData?.profile) setData(resData);
+            })
+            .catch(() => {});
+    }, []);
+
+    const name = data?.profile?.name || "Syamil Cholid Atsani";
+    const role = data?.profile?.role || "Student Developer";
+    const location = data?.profile?.location || "Lampung, Indonesia (WIB)";
+    const status = data?.profile?.status || "Open to projects / internship";
+    const focus = data?.profile?.focus || "Web Development & Full-stack";
+    const aboutParagraphs = data?.profile?.aboutParagraphs && data.profile.aboutParagraphs.length > 0
+        ? data.profile.aboutParagraphs
+        : [
+            "Halo! Gua student developer asal Lampung yang fokus ngebangun aplikasi web modern dan interaktif.",
+            "Gua paling sering ngoding pakai Next.js, React, dan Laravel buat kebutuhan aplikasi web full-stack yang responsif dan user-friendly.",
+            "Prinsip gua cukup simpel: bikin aplikasi yang kodenya rapi, gampang di-maintain, dan beneran ngebantu orang yang make."
+        ];
+    const techStack = data?.skills && data.skills.length > 0 ? data.skills : DEFAULT_STACK;
     return (
         <Container
             id="about"
@@ -40,11 +66,11 @@ export default function About() {
                 {/* ── Section Header — no eyebrow, just the name ── */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-10 sm:pb-14 border-b border-line mb-10 sm:mb-14">
                     <h2 className="text-3xl sm:text-5xl font-sans font-bold tracking-tight text-foreground text-wrap-balance">
-                        Syamil Cholid Atsani
+                        {name}
                     </h2>
                     <div className="font-mono text-xs text-foreground/60 space-y-1">
-                        <p>Student developer</p>
-                        <p>Lampung, Indonesia (WIB)</p>
+                        <p>{role}</p>
+                        <p>{location}</p>
                     </div>
                 </div>
 
@@ -52,15 +78,11 @@ export default function About() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 mb-16 sm:mb-20">
                     {/* Bio Text */}
                     <div className="lg:col-span-7 space-y-4 text-sm sm:text-base text-foreground/80 font-sans leading-relaxed">
-                        <p className="text-lg sm:text-xl font-semibold text-foreground leading-snug">
-                            Halo! Gua student developer asal Lampung yang fokus ngebangun aplikasi web modern dan interaktif.
-                        </p>
-                        <p>
-                            Gua paling sering ngoding pakai <strong>Next.js</strong>, <strong>React</strong>, dan <strong>Laravel</strong> buat kebutuhan aplikasi web full-stack yang responsif dan user-friendly.
-                        </p>
-                        <p>
-                            Prinsip gua cukup simpel: bikin aplikasi yang kodenya rapi, gampang di-maintain, dan beneran ngebantu orang yang make.
-                        </p>
+                        {aboutParagraphs.map((para, i) => (
+                            <p key={i} className={i === 0 ? "text-lg sm:text-xl font-semibold text-foreground leading-snug" : ""}>
+                                {para}
+                            </p>
+                        ))}
                     </div>
 
                     {/* Quick Info Card — tighter radius, no eyebrow */}
@@ -71,23 +93,35 @@ export default function About() {
                         <div className="space-y-3 font-mono text-xs">
                             <div className="flex items-center justify-between pb-2.5 border-b border-line">
                                 <span className="text-foreground/55">Status</span>
-                                <span className="font-bold text-foreground">Open to projects / internship</span>
+                                <span className="font-bold text-foreground">{status}</span>
                             </div>
                             <div className="flex items-center justify-between pb-2.5 border-b border-line">
                                 <span className="text-foreground/55">Focus</span>
-                                <span className="font-bold text-foreground">Web Development & Full-stack</span>
+                                <span className="font-bold text-foreground">{focus}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-foreground/55">Based in</span>
-                                <span className="font-bold text-foreground">Lampung, Indonesia</span>
+                                <span className="font-bold text-foreground">{location}</span>
                             </div>
                         </div>
+
+                        <a
+                            href="/cv.pdf"
+                            download="Syamil_Cholid_Atsani_CV.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-2.5 px-4 bg-background hover:bg-foreground hover:text-background border border-line hover:border-foreground transition-all duration-200 font-mono text-[0.68rem] tracking-wider uppercase font-bold text-center flex items-center justify-center gap-2 cursor-pointer"
+                            style={{ borderRadius: "var(--r-btn)" }}
+                        >
+                            <span>Download CV / Resume</span>
+                            <span aria-hidden="true">↓</span>
+                        </a>
                     </div>
                 </div>
 
                 {/* ── Tech Stack — flat 2-col list, no cards ── */}
                 <div className="divide-y divide-line">
-                    {TECH_STACK.map((cat, idx) => (
+                    {techStack.map((cat, idx) => (
                         <div
                             key={idx}
                             className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-8"
