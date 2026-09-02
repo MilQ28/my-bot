@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';   // <-- ini yang kemungkinan hilang/ke-skip
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { DefaultChatTransport } from 'ai';
+import { MessageCircle, X, Send, Bot, RefreshCw } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import ChatMessage from './ChatMessage';
 import TypingIndicator from './TypingIndicator';
@@ -34,29 +34,38 @@ export default function ChatWidget() {
     const [input, setInput] = useState('');
     const [quickChats, setQuickChats] = useState(getRandomQuickChats);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const { messages, sendMessage, status, setMessages, error } = useChat({
         transport: new DefaultChatTransport({ api: '/api/chat' }),
         onError: (err) => {
-            console.error('CHAT ERROR:', err);
+            console.error('[CHAT_WIDGET_ERROR]', err);
         },
     });
 
-    // Load riwayat chat dari localStorage saat komponen pertama kali mount
+    // Load riwayat chat dari localStorage saat mount
     useEffect(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) setMessages(JSON.parse(saved));
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setMessages(parsed);
+                }
+            }
         } catch (err) {
             console.error('Gagal memuat riwayat chat:', err);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [setMessages]);
 
     // Simpan setiap kali messages berubah
     useEffect(() => {
         if (messages.length > 0) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            } catch (err) {
+                console.warn('Gagal menyimpan chat ke localStorage:', err);
+            }
         }
     }, [messages]);
 
@@ -68,6 +77,7 @@ export default function ChatWidget() {
         });
     }, [messages, status]);
 
+    // Focus input and scroll when chat opens
     useEffect(() => {
         if (!isOpen) return;
 
@@ -76,9 +86,21 @@ export default function ChatWidget() {
                 top: scrollRef.current.scrollHeight,
                 behavior: 'auto',
             });
+            inputRef.current?.focus();
         });
 
-        return () => cancelAnimationFrame(frame);
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setIsOpen(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, [isOpen]);
 
     useEffect(() => {
@@ -94,8 +116,9 @@ export default function ChatWidget() {
 
     const handleSend = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim() || isLoading) return;
-        sendMessage({ text: input });
+        const trimmed = input.trim();
+        if (!trimmed || isLoading) return;
+        sendMessage({ text: trimmed });
         setInput('');
         setQuickChats([]);
     };
@@ -114,7 +137,10 @@ export default function ChatWidget() {
 
     const clearChat = () => {
         setMessages([]);
-        localStorage.removeItem(STORAGE_KEY);
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch {}
+        setQuickChats(getRandomQuickChats());
     };
 
     return (
@@ -126,7 +152,7 @@ export default function ChatWidget() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.96 }}
                         transition={{ duration: 0.2, ease: 'easeOut' }}
-                        className="mb-3 flex h-[80vh] max-h-[520px] w-[calc(100vw-2rem)] sm:w-[370px] flex-col overflow-hidden rounded-2xl border border-line bg-background shadow-2xl"
+                        className="mb-3 flex h-[80vh] max-h-[520px] w-[calc(100vw-2rem)] sm:w-[380px] flex-col overflow-hidden rounded-2xl border border-line bg-background shadow-2xl"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-line bg-panel px-4 py-3">
@@ -135,17 +161,22 @@ export default function ChatWidget() {
                                     <Bot size={18} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-foreground">Asisten Syamil</p>
-                                    <p className="text-[0.62rem] text-foreground/50 font-mono">PORTFOLIO AI</p>
+                                    <p className="text-sm font-bold text-foreground">Asisten Syamil</p>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[10px] text-foreground/60 font-mono">Online</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
                                 <button
                                     onClick={clearChat}
-                                    className="px-2 py-1 text-[11px] font-mono text-foreground/50 transition hover:cursor-pointer hover:text-foreground"
+                                    title="Reset percakapan"
+                                    className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-mono text-foreground/50 transition hover:bg-foreground/5 hover:text-foreground cursor-pointer"
                                     aria-label="Hapus percakapan"
                                 >
-                                    Reset
+                                    <RefreshCw size={11} />
+                                    <span>Reset</span>
                                 </button>
                                 <button
                                     onClick={() => setIsOpen(false)}
@@ -175,8 +206,8 @@ export default function ChatWidget() {
                                 <ChatMessage key={message.id} message={message} />
                             ))}
                             {error && (
-                                <div className="rounded-lg bg-danger/10 px-3 py-2 text-xs text-danger">
-                                    Error: {error.message}
+                                <div className="rounded-lg bg-danger/10 border border-danger/20 px-3 py-2 text-xs text-danger">
+                                    Error: {error.message || 'Gagal memproses pesan AI. Silakan coba lagi.'}
                                 </div>
                             )}
                             {isLoading && <TypingIndicator />}
@@ -215,6 +246,7 @@ export default function ChatWidget() {
                             className="flex items-center gap-2 border-t border-line bg-panel p-2.5"
                         >
                             <input
+                                ref={inputRef}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Tulis pertanyaan..."
@@ -224,7 +256,7 @@ export default function ChatWidget() {
                             <button
                                 type="submit"
                                 disabled={isLoading || !input.trim()}
-                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-foreground transition hover:bg-accent disabled:opacity-30 cursor-pointer"
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition hover:bg-accent disabled:opacity-30 cursor-pointer"
                                 aria-label="Kirim pesan"
                             >
                                 <Send size={14} />
@@ -238,7 +270,7 @@ export default function ChatWidget() {
             <motion.button
                 whileTap={{ scale: 0.92 }}
                 onClick={toggleChat}
-                className="flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-full bg-primary text-foreground shadow-lg shadow-primary/25 transition hover:bg-accent cursor-pointer"
+                className="flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-accent cursor-pointer"
                 aria-label={isOpen ? 'Tutup chat' : 'Buka chat'}
             >
                 <AnimatePresence mode="wait" initial={false}>
@@ -265,4 +297,4 @@ export default function ChatWidget() {
             </motion.button>
         </div>
     );
-}
+}

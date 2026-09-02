@@ -109,12 +109,15 @@ export default function Hero() {
                     <span className="hero-link-sep">/</span>
                     <a href="#projects" className="hero-link">projects</a>
                     <span className="hero-link-sep">/</span>
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent("open-chat"))}
+                    <a
+                        href="#contact"
+                        onClick={() => {
+                            window.dispatchEvent(new CustomEvent("open-chat"));
+                        }}
                         className="hero-link"
                     >
                         talk
-                    </button>
+                    </a>
                 </div>
             </div>
 
