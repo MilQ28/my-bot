@@ -53,7 +53,7 @@ export default function Hero() {
     };
 
     return (
-        <section className="hero" id="home">
+        <section className="hero" id="hero">
             {/* Watermark nama */}
             <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
                 {/* SYAMIL — kiri atas */}

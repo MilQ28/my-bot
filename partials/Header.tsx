@@ -49,7 +49,7 @@ export default function Header() {
       >
         {/* Wordmark */}
         <a
-          href="/#home"
+          href="/"
           className="text-foreground no-underline font-mono text-xs tracking-[0.14em] uppercase opacity-70 hover:opacity-100 transition-opacity duration-200"
         >
           syamil atsani
@@ -114,9 +114,9 @@ export default function Header() {
             transition: open ? "opacity 0.3s ease 0.4s" : "opacity 0.12s ease",
           }}
         >
-          <span className="font-mono text-[0.65rem] tracking-[0.14em] uppercase text-white/30">
+          <a href="/" className="font-mono text-[0.65rem] tracking-[0.14em] uppercase text-white/30">
             syamil atsani
-          </span>
+          </a>
           <button
             onClick={() => setOpen(false)}
             className="ml-auto font-mono text-[0.68rem] tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors duration-200 cursor-pointer bg-transparent border-none p-2"

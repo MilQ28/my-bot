@@ -4,8 +4,9 @@ import { useEffect } from 'react';
 
 export default function SectionObserver() {
     useEffect(() => {
-        const sectionIds = ['home', 'about', 'projects', 'contact'];
-        
+        const sectionIds = ['hero', 'about', 'projects', 'contact'];
+        const rootId = 'hero'; // section yang dianggap "beranda", hash-nya dikosongkan
+
         // Wait for DOM layout
         const timer = setTimeout(() => {
             const sections = sectionIds
@@ -25,7 +26,7 @@ export default function SectionObserver() {
                     visibleEntries.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
                     const mostVisible = visibleEntries[0];
                     const targetId = mostVisible.target.id;
-                    const newHash = targetId === 'home' ? '#' : `#${targetId}`;
+                    const newHash = targetId === rootId ? '#' : `#${targetId}`;
 
                     if (window.location.hash !== newHash && newHash !== currentHash) {
                         currentHash = newHash;
