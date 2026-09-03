@@ -40,6 +40,7 @@ export default function AdminDashboardClient({ initialData }: Props) {
   // CV Upload state
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [isUploadingCv, setIsUploadingCv] = useState(false);
+  const [currentCvUrl, setCurrentCvUrl] = useState<string>(initialData.cvUrl || '/cv.pdf');
 
   // Project Modal/Form state
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
@@ -131,6 +132,10 @@ export default function AdminDashboardClient({ initialData }: Props) {
       if (res.ok && resData.success) {
         showToast('success', `File CV berhasil di-update (${resData.size})!`);
         setCvFile(null);
+        if (resData.url) {
+          setCurrentCvUrl(resData.url);
+          setData((prev) => ({ ...prev, cvUrl: resData.url }));
+        }
       } else {
         showToast('error', resData.error || 'Gagal mengunggah CV');
       }
@@ -549,7 +554,7 @@ export default function AdminDashboardClient({ initialData }: Props) {
               <div>
                 <h2 className="text-base font-bold text-foreground font-sans">Upload File CV / Resume PDF</h2>
                 <p className="text-xs text-foreground/60 mt-0.5">
-                  File yang diunggah akan otomatis menimpa file <code className="font-mono text-primary">public/cv.pdf</code>.
+                  File CV diunggah langsung ke <span className="font-mono text-primary font-semibold">Vercel Blob Storage</span> dan URL aktif disimpan di <span className="font-mono text-primary font-semibold">Upstash Redis</span>.
                 </p>
               </div>
 
@@ -570,15 +575,21 @@ export default function AdminDashboardClient({ initialData }: Props) {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between pt-2">
-                  <a
-                    href="/cv.pdf"
-                    target="_blank"
-                    className="font-mono text-xs text-foreground/60 hover:text-foreground underline underline-offset-4 flex items-center gap-1"
-                  >
-                    <span>Preview CV Aktif</span>
-                    <ExternalLink size={11} />
-                  </a>
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={currentCvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs text-foreground/80 hover:text-foreground underline underline-offset-4 flex items-center gap-1"
+                    >
+                      <span>Preview CV Aktif</span>
+                      <ExternalLink size={11} />
+                    </a>
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-line text-foreground/50">
+                      {currentCvUrl.startsWith('http') ? 'Vercel Blob' : 'Local static (public/cv.pdf)'}
+                    </span>
+                  </div>
 
                   <button
                     type="submit"

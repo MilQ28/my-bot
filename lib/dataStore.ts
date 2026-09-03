@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import { redis } from "./redis";
+import fallbackData from "@/data/portfolio-data.json";
 
 export interface ProjectItem {
   id: string;
@@ -38,95 +38,71 @@ export interface PortfolioData {
     quickPrompts: string[];
     customNote: string;
   };
+  cvUrl?: string;
 }
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'portfolio-data.json');
+const KV_KEY = "portfolio-data";
+const CV_URL_KEY = "cv-url";
 
-export function getPortfolioData(): PortfolioData {
+export function getDefaultData(): PortfolioData {
+  return fallbackData as PortfolioData;
+}
+
+export async function getPortfolioData(): Promise<PortfolioData> {
+  if (!redis) {
+    return getDefaultData();
+  }
+
   try {
-    if (!fs.existsSync(DATA_PATH)) {
-      return getDefaultData();
-    }
-    const fileContent = fs.readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(fileContent);
+    const data = await redis.get<PortfolioData>(KV_KEY);
+    return data ?? getDefaultData();
   } catch (err) {
-    console.error('[DATA_STORE_READ_ERROR]', err);
+    console.error("[DATA_STORE_READ_ERROR]", err);
     return getDefaultData();
   }
 }
 
-export function savePortfolioData(data: PortfolioData): boolean {
+export async function savePortfolioData(data: PortfolioData): Promise<boolean> {
+  if (!redis) {
+    console.warn("[DATA_STORE_WRITE_WARNING] Redis is not configured. Data not persisted to KV.");
+    return false;
+  }
+
   try {
-    const dir = path.dirname(DATA_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
+    await redis.set(KV_KEY, data);
     return true;
   } catch (err) {
-    console.error('[DATA_STORE_WRITE_ERROR]', err);
+    console.error("[DATA_STORE_WRITE_ERROR]", err);
     return false;
   }
 }
 
-function getDefaultData(): PortfolioData {
-  return {
-    profile: {
-      name: "Syamil Cholid Atsani",
-      role: "Student Developer",
-      location: "Lampung, Indonesia",
-      status: "Open for project & internship",
-      focus: "Laravel - Next.js - TypeScript",
-      bioSubtitle: "student developer - lampung",
-      bioQuote: "nulis kode, deploy server,\nkadang debug sampai subuh.",
-      aboutParagraphs: [
-        "Halo! Gua student developer asal Lampung yang fokus ngebangun aplikasi web modern dan interaktif.",
-        "Gua paling sering ngoding pakai Next.js, React, dan Laravel buat kebutuhan aplikasi web full-stack yang responsif dan user-friendly.",
-        "Prinsip gua cukup simpel: bikin aplikasi yang kodenya rapi, gampang di-maintain, dan beneran ngebantu orang yang make."
-      ],
-      email: "syamilcholidatsan@gmail.com",
-      github: "https://github.com/MilQ28",
-      linkedin: "https://linkedin.com/in/syamilca"
-    },
-    projects: [
-      {
-        id: "stellazone",
-        title: "Stellazone",
-        subtitle: "School Organization Web Platform",
-        description: "Web platform terpadu untuk organisasi sekolah MPK-OSIS.",
-        technologies: ["Next.js", "React", "Laravel", "MySQL", "Tailwind CSS"],
-        githubUrl: "https://github.com/MilQ28/Stellazone",
-        liveUrl: "",
-        status: "In Active Development",
-        isFeatured: true
-      }
-    ],
-    skills: [
-      {
-        category: "Frameworks & Backend",
-        items: [
-          { name: "Laravel (PHP)", desc: "Web backend, REST API, web applications" },
-          { name: "Node.js & Express", desc: "REST API & server utilities" },
-          { name: "Python", desc: "Scripting, automation, data handling" }
-        ]
-      },
-      {
-        category: "Frontend & Interface",
-        items: [
-          { name: "Next.js & React", desc: "Full-stack web apps, dynamic routing" },
-          { name: "TypeScript", desc: "Type-safe code, fewer runtime surprises" },
-          { name: "Tailwind CSS", desc: "Responsive styling, component UI" }
-        ]
-      }
-    ],
-    botConfig: {
-      quickPrompts: [
-        "Ceritakan tentang Syamil",
-        "Apa saja skill Syamil?",
-        "Lihat proyek terbaru",
-        "Boleh minta CV / Resume Syamil?"
-      ],
-      customNote: ""
-    }
-  };
+export async function getCvUrl(): Promise<string> {
+  if (!redis) {
+    return "/cv.pdf";
+  }
+
+  try {
+    const url = await redis.get<string>(CV_URL_KEY);
+    return url || "/cv.pdf";
+  } catch (err) {
+    console.error("[DATA_STORE_CV_READ_ERROR]", err);
+    return "/cv.pdf";
+  }
 }
+
+export async function saveCvUrl(url: string): Promise<boolean> {
+  if (!redis) {
+    console.warn("[DATA_STORE_CV_WRITE_WARNING] Redis is not configured. CV URL not persisted.");
+    return false;
+  }
+
+  try {
+    await redis.set(CV_URL_KEY, url);
+    return true;
+  } catch (err) {
+    console.error("[DATA_STORE_CV_WRITE_ERROR]", err);
+    return false;
+  }
+}
+

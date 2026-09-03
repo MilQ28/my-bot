@@ -106,7 +106,7 @@ export default function About() {
                         </div>
 
                         <a
-                            href="/cv.pdf"
+                            href={data?.cvUrl || "/api/cv"}
                             download="Syamil_Cholid_Atsani_CV.pdf"
                             target="_blank"
                             rel="noopener noreferrer"

@@ -15,7 +15,7 @@ export default async function DynamicAdminPage({ params }: PageProps) {
     notFound();
   }
 
-  const initialData = getPortfolioData();
+  const initialData = await getPortfolioData();
 
   return <AdminDashboardClient initialData={initialData} token={resolvedParams.token} />;
 }

@@ -72,7 +72,7 @@ export default function Contact() {
                                 {copied ? "✓ Copied to clipboard" : "Copy email address"}
                             </button>
                             <a
-                                href="/cv.pdf"
+                                href="/api/cv"
                                 download="Syamil_Cholid_Atsani_CV.pdf"
                                 target="_blank"
                                 rel="noopener noreferrer"
