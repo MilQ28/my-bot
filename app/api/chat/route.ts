@@ -45,10 +45,15 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("[CHAT_API_ERROR]", error);
+    const isProd = process.env.NODE_ENV === "production";
     const msg = error instanceof Error ? error.message : String(error);
     const stack = error instanceof Error ? error.stack : undefined;
     return Response.json(
-      { error: "Terjadi kesalahan saat memproses permintaan AI.", detail: msg, stack },
+      {
+        error: "Terjadi kesalahan saat memproses permintaan AI.",
+        detail: isProd ? undefined : msg,
+        stack: isProd ? undefined : stack,
+      },
       { status: 500 }
     );
   }

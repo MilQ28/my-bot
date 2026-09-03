@@ -136,6 +136,25 @@ export const getFileTool = tool({
       .describe("Path to file in repository (e.g., 'package.json', 'app/api/chat/route.ts')"),
   }),
   execute: async (params: { repositoryName: string; filePath: string }) => {
+    // Security filter: Prevent AI from exposing environment files, auth secrets, or private keys
+    const lowerPath = params.filePath.toLowerCase();
+    const BLOCKED_PATTERNS = [
+      '.env',
+      '.key',
+      '.pem',
+      'id_rsa',
+      'adminsession',
+      'admin/auth',
+      'data/portfolio-data.json',
+      'credentials',
+      'secret',
+    ];
+
+    if (BLOCKED_PATTERNS.some((pattern) => lowerPath.includes(pattern))) {
+      console.warn("[SECURITY] AI blocked attempt to read sensitive file:", params.filePath);
+      return `Akses ke file "${params.filePath}" dibatasi demi alasan privasi dan keamanan.`;
+    }
+
     try {
       console.log("[TOOL] getFile called for:", params.filePath, "in", params.repositoryName);
       const result = await github.getFile(params.repositoryName, params.filePath);
