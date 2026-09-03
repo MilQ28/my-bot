@@ -23,9 +23,8 @@
       "subtitle": "School Organization Web Platform",
       "description": "Web platform terpadu untuk organisasi sekolah MPK-OSIS guna mendukung alur kerja administrasi, komunikasi, dan manajemen data siswa.",
       "technologies": [
-        "Next.js",
-        "React",
         "Laravel",
+        "Javascript",
         "MySQL",
         "Tailwind CSS"
       ],
@@ -115,7 +114,8 @@
       "Teknologi apa yang Syamil gunakan?",
       "Apa proyek paling menarik?",
       "Apakah Syamil tersedia untuk bekerja sama?",
-      "Ini tuh apa loh??"
+      "Ini tuh apa loh??",
+      "SUPRISE ME"
     ],
     "customNote": ""
   }

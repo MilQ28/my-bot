@@ -140,16 +140,6 @@ export default function Hero() {
                     >
                         talk
                     </a>
-                    <span className="hero-link-sep">/</span>
-                    <a
-                        href="/cv.pdf"
-                        download="Syamil_Cholid_Atsani_CV.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hero-link font-bold text-primary"
-                    >
-                        cv ↗
-                    </a>
                 </div>
             </div>
 

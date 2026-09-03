@@ -35,9 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             <ChatWidget />
             <AdminSecretModal />
-            
-            <Footer/>
-            
+
+            <Footer />
+
           </ThemeProvider>
         </ColorBlindProvider>
       </body>
